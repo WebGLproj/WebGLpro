@@ -30,6 +30,21 @@ init the program
 ### 走过的一些坑(大家可以继续补充)
 
 * 在做贴图的时候，贴图的高度和宽度如果不是2的幂次，可能会报错`58RENDER WARNING: texture bound to texture unit 0 is not renderable. It maybe non-power-of-2 and have  incompatible texture filtering or is not 'texture complete`，所以没有特殊情况都把像素调整为2的幂次。
+* 由于读取的文件特别是mtl文件可能编码和我们的机器不同，所以有时候我们在字符串判定的时候需要对字符串进行稍加处理，(用replace去掉空格等)，下面是一个例子：
+
+```
+OBJDoc.prototype.findColor = function(name){
+    for(var i = 0; i < this.mtls.length; i++){
+        for(var j = 0; j < this.mtls[i].materials.length; j++){
+            if(this.mtls[i].materials[j].name.replace( /^\s+|\s+$/g, "" ) == name){
+                return(this.mtls[i].materials[j].color)
+            }
+        }
+    }
+    console.log(this.mtls);
+    return(new Color(0.8, 0.8, 0.8, 1));
+}
+```
 
 ### 整体结构设计
 
