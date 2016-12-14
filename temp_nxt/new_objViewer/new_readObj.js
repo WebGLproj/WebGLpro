@@ -11,6 +11,7 @@
 
 //------------------------------------------------------------------------------
 // Constructor:StringParser 这个对象封装了用于操作单行字符串的函数
+// 前面的这些函数最好通过闭包进行封装，但现在使用闭包的话会产生一些负面作用，这个我正在思考
 var StringParser = function(str) {
     this.str = null;   // Store the string specified by the argument
     this.index = 0; // Position in the string to be processed
@@ -223,31 +224,35 @@ function parseUsemtl(sp) {
     return sp.getWord();
 }
 
+var iiii = 1;
 //这个函数的作用就是解析平面，因为obj文件本身的平面记录规则比较复杂。
-function parseFace(sp, materialName, vertices, textureVt, reverse) {
+function parseFace(sp, materialName, vertices, textureVt, Normals, reverse) {
     var face = new Face(materialName);
     // get indices
     for(;;){
         var word = sp.getWord();
-        if(word == null) break;
+        if(!word||!word.replace( /^\s+|\s+$/g, "" )) break;
         var subWords = word.split('/');
         if(subWords.length >= 1){
-            var vi = parseInt(subWords[0]) - 1;
+            var vi = parseInt(subWords[0])<0?vertices.length+parseInt(subWords[0]):parseInt(subWords[0])- 1;
+            if(iiii<4)console.log(vi,"vi",parseInt(subWords[0]),subWords,word,(word.replace( /^\s+|\s+$/g, "" )));
             face.vIndices.push(vi);
         }
         if(subWords.length >= 2){
-            var ti = parseInt(subWords[1]) - 1;
+            var ti = parseInt(subWords[1])<0?textureVt.length+parseInt(subWords[1]):parseInt(subWords[1])- 1;
             face.tIndices.push(ti);
         }
         if(subWords.length >= 3){
-            var ni = parseInt(subWords[2]) - 1;
+            var ni = parseInt(subWords[2])<0?Normals.length+parseInt(subWords[2]):parseInt(subWords[2])- 1;
             face.nIndices.push(ni);
         }else{
             face.nIndices.push(-1);
         }
     }
+    if(iiii<4)console.log(face.vIndices,"face.vIndices",vertices[face.vIndices[0]],vertices[face.vIndices[1]],vertices[face.vIndices[2]]);
 
     // calc normal
+    // console.log(vertices,face.vIndices[0],face.vIndices[1],face.vIndices[2]);
     var v0 = [
         vertices[face.vIndices[0]].x,
         vertices[face.vIndices[0]].y,
@@ -262,7 +267,7 @@ function parseFace(sp, materialName, vertices, textureVt, reverse) {
         vertices[face.vIndices[2]].z];
 
     var t1,t2,t3;
-    if(face.tIndices.length==3) {
+    if(face.tIndices.length>=3) {
         t1 = [
             textureVt[face.tIndices[0]].x,
             textureVt[face.tIndices[0]].y];
@@ -316,8 +321,11 @@ function parseFace(sp, materialName, vertices, textureVt, reverse) {
         face.vIndices = newVIndices;
         face.nIndices = newNIndices;
         face.textureVt = newTIndices;
+        if(iiii<4)console.log("face.vIndices",face.vIndices);
     }
     face.numIndices = face.vIndices.length;
+
+    iiii++;
 
     return face;
 }
@@ -401,7 +409,8 @@ function OBJDocparser (fileString, modelObject, mtlArray, objArray, scale, rever
                         if (request.status != 404) {
                             onReadMTLFile(request.responseText, mtl, modelObject, index, mtlArray);
                         }else{
-                            console.log("need a mtlib, but there is none");
+                            mtlArray[index]=!modelObject[index].mtls.some(function(x){return !x});
+                            console.log("need a mtlib, but there is none",mtlArray[index]);
                             mtl.complete = true;
                         }
                     }
@@ -428,7 +437,7 @@ function OBJDocparser (fileString, modelObject, mtlArray, objArray, scale, rever
                 currentMaterialName = parseUsemtl(sp);
                 continue; // Go to the next line
             case 'f': // Read face
-                var face = parseFace(sp, currentMaterialName, this.vertices,this.textureVt, reverse);
+                var face = parseFace(sp, currentMaterialName, this.vertices,this.textureVt, this.normals, reverse);
                 currentObject.addFace(face);
                 continue; // Go to the next line
             case 'vt':

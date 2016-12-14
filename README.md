@@ -26,11 +26,12 @@ init the program
         }
     </script>
 ```
+(聂小涛)
 
 ### 走过的一些坑(大家可以继续补充)
 
-* 在做贴图的时候，贴图的高度和宽度如果不是2的幂次，可能会报错`58RENDER WARNING: texture bound to texture unit 0 is not renderable. It maybe non-power-of-2 and have  incompatible texture filtering or is not 'texture complete`，所以没有特殊情况都把像素调整为2的幂次。
-* 由于读取的文件特别是mtl文件可能编码和我们的机器不同，所以有时候我们在字符串判定的时候需要对字符串进行稍加处理，(用replace去掉空格等)，下面是一个例子：
+* 在做贴图的时候，贴图的高度和宽度如果不是2的幂次，可能会报错`58RENDER WARNING: texture bound to texture unit 0 is not renderable. It maybe non-power-of-2 and have  incompatible texture filtering or is not 'texture complete`，所以没有特殊情况都把像素调整为2的幂次。(聂小涛)
+* 由于读取的文件特别是mtl文件可能编码和我们的机器不同，所以有时候我们在字符串判定的时候需要对字符串进行稍加处理，(用replace去掉空格等)，下面是一个例子：(聂小涛)
 
 ```
 OBJDoc.prototype.findColor = function(name){
@@ -46,9 +47,23 @@ OBJDoc.prototype.findColor = function(name){
 }
 ```
 
+* 面可以使用负值索引，有时用负值索引描述面更为简便。
+
+```
+v -0.500000 0.000000 0.400000
+v -0.500000 0.000000 -0.800000
+v -0.500000 1.000000 -0.800000
+v -0.500000 1.000000 0.400000
+f -4 -3 -2 -1
+```
+
+"f -4 -3 -2 -1"这句索引值"-3"表示从"f"这行往上数第3个顶点，就是"v -0.500000 0.000000 -0.800000"，其它的索引值以此类推。 因此与这一行等效的正值索引写法为："f 1 2 3 4"  (聂小涛)
+
+* 花了一天的时间研究有时候WebGL渲染出错的问题(提供一个obj文件，渲染出一团糟的结果)：经过研究，发现目前使用我写的obj读取代码，如果文件稍微大(基本超过5MB就会出错了)就会出错(firefox\chrome)，但是文件在1MB以下或者1-2MB都没有问题，当然，这可能应该是代码的问题，稍微大一点的模型理论上应该还是可以渲染的(虽然点数有点多，大概有几十万个点)。也希望大家可以帮忙看一下我的代码，一起找一下问题.(聂小涛)
+
 ### 整体结构设计
 
-自己简单的梳理了一下WebGL这块的整体结构设计，下图绿色代表异步，蓝色代表单独的文件模块，黄色代表控制数据流：
+自己简单的梳理了一下WebGL这块的整体结构设计，下图绿色代表异步，蓝色代表单独的文件模块，黄色代表控制数据流：(聂小涛)
 
 ![](./temp_nxt/images/jiagou.jpeg)
 
