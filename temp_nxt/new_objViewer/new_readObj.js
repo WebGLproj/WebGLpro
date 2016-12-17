@@ -166,11 +166,12 @@ var Face = function(materialName) {
 //------------------------------------------------------------------------------
 // DrawInfo Object
 //------------------------------------------------------------------------------
-var DrawingInfo = function(vertices, normals, colors, indices) {
+var DrawingInfo = function(vertices, normals, colors, indices, textureVt) {
     this.vertices = vertices;
     this.normals = normals;
     this.colors = colors;
     this.indices = indices;
+    this.textureVt=textureVt;
 };
 
 //这个函数还是需要的，还是需要创建这个临时变量?? 重新考虑吧
@@ -241,6 +242,8 @@ function parseFace(sp, materialName, vertices, textureVt, Normals, reverse) {
         if(subWords.length >= 2){
             var ti = parseInt(subWords[1])<0?textureVt.length+parseInt(subWords[1]):parseInt(subWords[1])- 1;
             face.tIndices.push(ti);
+        }else{
+            // face.tIndices.push(undefined);
         }
         if(subWords.length >= 3){
             var ni = parseInt(subWords[2])<0?Normals.length+parseInt(subWords[2]):parseInt(subWords[2])- 1;
@@ -248,6 +251,10 @@ function parseFace(sp, materialName, vertices, textureVt, Normals, reverse) {
         }else{
             face.nIndices.push(-1);
         }
+        // else if(subWords.length<1){
+        //     console.log("word,subwords",word,subWords,subWords.length);
+        //     //face.nIndices.push(-1);
+        // }
     }
     if(iiii<4)console.log(face.vIndices,"face.vIndices",vertices[face.vIndices[0]],vertices[face.vIndices[1]],vertices[face.vIndices[2]]);
 
@@ -266,6 +273,7 @@ function parseFace(sp, materialName, vertices, textureVt, Normals, reverse) {
         vertices[face.vIndices[2]].y,
         vertices[face.vIndices[2]].z];
 
+    //这个其实没有什么用，留着以后删除吧
     var t1,t2,t3;
     if(face.tIndices.length>=3) {
         t1 = [
@@ -314,13 +322,13 @@ function parseFace(sp, materialName, vertices, textureVt, Normals, reverse) {
             newNIndices[i * 3]     = face.nIndices[0];
             newNIndices[i * 3 + 1] = face.nIndices[i + 1];
             newNIndices[i * 3 + 2] = face.nIndices[i + 2];
-            newTIndices[i * 3]     = face.textureVt[0];
-            newTIndices[i * 3 + 1] = face.textureVt[i + 1];
-            newTIndices[i * 3 + 2] = face.textureVt[i + 2]
+            newTIndices[i * 3]     = face.tIndices[0];
+            newTIndices[i * 3 + 1] = face.tIndices[i + 1];
+            newTIndices[i * 3 + 2] = face.tIndices[i + 2]
         }
         face.vIndices = newVIndices;
         face.nIndices = newNIndices;
-        face.textureVt = newTIndices;
+        face.tIndices = newTIndices;
         if(iiii<4)console.log("face.vIndices",face.vIndices);
     }
     face.numIndices = face.vIndices.length;
@@ -497,8 +505,7 @@ function findColor(target,name){
             }
         }
     }
-    // console.log(this.mtls);
-    return(new Color(0.8, 0.8, 0.8, 1));
+    return(new Color(1, 1, 1, 1));
 }
 
 //入口函数,这个函数调用了之前的很多函数
