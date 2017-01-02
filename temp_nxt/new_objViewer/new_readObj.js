@@ -394,6 +394,7 @@ function OBJDocparser (fileString, modelObject, mtlArray, objArray, scale, rever
 
     var currentObject = null;//理解为一个代号?
     var currentMaterialName = "";
+    var ifmtl=false;
 
     // Parse line by line
     var line;         // A string in the line to be parsed
@@ -406,7 +407,8 @@ function OBJDocparser (fileString, modelObject, mtlArray, objArray, scale, rever
         switch(command){
             case '#':
                 continue;  // Skip comments
-            case 'mtllib':     // Read Material chunk
+            case 'mtllib':
+                ifmtl=true;// Read Material chunk
                 var path = parseMtllib(sp, this.fileName);
                 var mtl = new MTLDoc();   // Create MTL instance
                 this.mtls.push(mtl);
@@ -457,6 +459,7 @@ function OBJDocparser (fileString, modelObject, mtlArray, objArray, scale, rever
         }
     }
     objArray[index]=true;
+    if(!ifmtl)mtlArray[index]=true;
     return true;
 }
 
