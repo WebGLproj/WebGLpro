@@ -233,7 +233,10 @@ function parseFace(sp, materialName, vertices, textureVt, Normals, reverse) {
     for(;;){
         var word = sp.getWord();
         if(!word||!word.replace( /^\s+|\s+$/g, "" )) break;
-        var subWords = word.split('/');
+        var subWords;
+        if(word.indexOf("//">-1)) subWords = word.split('//');
+        else subWords = word.split('/');
+
         if(subWords.length >= 1){
             var vi = parseInt(subWords[0])<0?vertices.length+parseInt(subWords[0]):parseInt(subWords[0])- 1;
             if(iiii<4)console.log(vi,"vi",parseInt(subWords[0]),subWords,word,(word.replace( /^\s+|\s+$/g, "" )));
