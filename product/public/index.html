@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="normalize.css">
+  <link rel="stylesheet" href="skeleton.css">
+  <style>
+    body {
+      background-color: black;
+      padding-top: 160px;
+    }
+    h1, #message, #buttons {
+      color: white;
+      margin: 50px 0 50px 0;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="section">
+    <div class="container">
+      <h1>Room Escape</h1>
+      <p id="message">Select room to join the game</p>
+      <div id="buttons">
+        <button class="button-primary" onclick="join(0)">Room 0</button>
+        <button class="button-primary" onclick="join(1)">Room 1</button>
+        <button class="button-primary" onclick="join(2)">Room 2</button>
+        <button class="button-primary" onclick="join(3)">Room 3</button>
+      </div>
+    </div>
+  </div>
+  <script src="socket.io.js"></script>
+  <script>
+    var chosenRoom = -1;
+    function getButtons() {
+      return document.getElementsByTagName('button');
+    }
+    function printMessage(message) {
+      document.getElementById('message').textContent = message;
+    }
+    var socket = io.connect('http://192.168.1.109:3000');
+    socket.on('status', function (emptyRooms) {
+      for (var i = 0; i < 4; i++) {
+        var element = getButtons()[i];
+        if (emptyRooms[i]) {
+          element.className = 'button-primary';
+          element.disabled = false;
+        } else {
+          element.className = 'button';
+          element.disabled = true;
+        }
+      }
+      if (emptyRooms.every(x => !x)) printMessage('No available rooms left');
+    });
+    socket.on('join', function (room) {
+      var elements = getButtons();
+      elements[room].className = 'button';
+      if (document.getElementsByClassName('button-primary').length > 0) return;
+      if (chosenRoom > -1) {
+        socket.emit('joined', room);
+        window.location.replace('room' + chosenRoom + '/index.html');
+      } else {
+        printMessage('No available rooms left');
+      }
+    });
+    socket.on('leave', function (room) {
+      var elements = getButtons();
+      elements[room].className = 'button-primary';
+      elements[room].disabled = false;
+      socket.emit('Select room to join the game');
+    });
+    function join(room) {      
+      socket.emit('join', room);
+      chosenRoom = room;
+      var elements = getButtons();
+      for (var i = 0; i < 4; i++) elements[i].disabled = true;
+      printMessage('You have chosen Room ' + room + '. Waiting for other players...');
+    }
+  </script>
+</body>
+</html>
