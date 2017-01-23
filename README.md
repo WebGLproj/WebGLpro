@@ -1,4 +1,4 @@
-游戏的玩法演示视频，可以<a href="https://v.qq.com/x/page/v03690kwvek.html">点击这里</a>
+游戏的玩法演示视频，可以<a href="http://v.qq.com/x/page/x0369f9go0e.html">点击这里</a>
 
 glb文件夹下更新整个工程(1.9凌晨3点)
 [注:由于模型文件的版权问题，我们暂时将工程文件下线，如果有看完我们的视频感兴趣的朋友，可以直接联系我:networknxt@gmail.com]
