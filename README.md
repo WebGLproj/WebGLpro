@@ -1,8 +1,12 @@
+游戏的玩法演示视频，可以<a href="https://v.qq.com/x/page/v03690kwvek.html">点击这里</a>
+
 glb文件夹下更新整个工程(1.9凌晨3点)
+[注:由于模型文件的版权问题，我们暂时将工程文件下线，如果有看完我们的视频感兴趣的朋友，可以直接联系我:networknxt@gmail.com]
+
+关于本次工程的详细报告，还可以移步到report文件夹下面进行查看
 
 
-### 一些代码规范(建议,可改)
-
+### 一些代码规范
 1. 为了防止过多的文件同步、异步加载，建议着色器写在js标签中，放在相应的html文件内即可，之后直接读取标签内容也会比较方便，例如：
 
 ```
@@ -29,7 +33,7 @@ glb文件夹下更新整个工程(1.9凌晨3点)
 ```
 (聂小涛)
 
-### 走过的一些坑(大家可以继续补充)
+### 走过的一些坑
 
 * 在做贴图的时候，贴图的高度和宽度如果不是2的幂次，可能会报错`58RENDER WARNING: texture bound to texture unit 0 is not renderable. It maybe non-power-of-2 and have  incompatible texture filtering or is not 'texture complete`，所以没有特殊情况都把像素调整为2的幂次。(聂小涛)
 * 由于读取的文件特别是mtl文件可能编码和我们的机器不同，所以有时候我们在字符串判定的时候需要对字符串进行稍加处理，(用replace去掉空格等)，下面是一个例子：(聂小涛)
